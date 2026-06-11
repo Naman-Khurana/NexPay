@@ -4,7 +4,9 @@ import com.project.NexPay.Comman.Enum.BusinessType;
 import com.project.NexPay.Comman.Enum.MerchantStatus;
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.web.bind.annotation.Mapping;
 
+import java.util.List;
 import java.util.UUID;
 
 @Entity
