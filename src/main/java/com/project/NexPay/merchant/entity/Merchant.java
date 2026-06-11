@@ -1,12 +1,10 @@
-package com.project.NexPay.Merchant.Entity;
+package com.project.NexPay.merchant.entity;
 
-import com.project.NexPay.Comman.Enum.BusinessType;
-import com.project.NexPay.Comman.Enum.MerchantStatus;
+import com.project.NexPay.comman.enums.BusinessType;
+import com.project.NexPay.comman.enums.MerchantStatus;
 import jakarta.persistence.*;
 import lombok.*;
-import org.springframework.web.bind.annotation.Mapping;
 
-import java.util.List;
 import java.util.UUID;
 
 @Entity

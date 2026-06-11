@@ -1,4 +1,4 @@
-package com.project.NexPay.Merchant.Entity;
+package com.project.NexPay.merchant.entity;
 
 import jakarta.persistence.*;
 import lombok.*;

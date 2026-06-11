@@ -1,4 +1,4 @@
-package com.project.NexPay.Vault.Entity;
+package com.project.NexPay.vault.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -19,7 +19,7 @@ public class CardToken {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @Column(length = 50, nullable = false)
+    @Column(length = 50, nullable = false, unique = true)
     private String token;
 
 

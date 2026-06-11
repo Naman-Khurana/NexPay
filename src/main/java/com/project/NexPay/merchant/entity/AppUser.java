@@ -1,6 +1,6 @@
-package com.project.NexPay.Merchant.Entity;
+package com.project.NexPay.merchant.entity;
 
-import com.project.NexPay.Comman.Enum.UserRole;
+import com.project.NexPay.comman.enums.UserRole;
 import jakarta.persistence.*;
 import lombok.*;
 

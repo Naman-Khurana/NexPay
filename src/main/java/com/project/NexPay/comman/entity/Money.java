@@ -1,4 +1,4 @@
-package com.project.NexPay.Comman.Entity;
+package com.project.NexPay.comman.entity;
 
 import jakarta.persistence.Embeddable;
 import lombok.AllArgsConstructor;

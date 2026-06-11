@@ -1,8 +1,8 @@
-package com.project.NexPay.Payment.Entity;
+package com.project.NexPay.payment.entity;
 
-import com.project.NexPay.Comman.Enum.PaymentActor;
-import com.project.NexPay.Comman.Enum.PaymentEvent;
-import com.project.NexPay.Comman.Enum.PaymentStatus;
+import com.project.NexPay.comman.enums.PaymentActor;
+import com.project.NexPay.comman.enums.PaymentEvent;
+import com.project.NexPay.comman.enums.PaymentStatus;
 import jakarta.persistence.*;
 import lombok.*;
 

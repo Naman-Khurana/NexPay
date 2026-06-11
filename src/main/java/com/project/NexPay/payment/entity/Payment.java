@@ -1,9 +1,8 @@
-package com.project.NexPay.Payment.Entity;
+package com.project.NexPay.payment.entity;
 
-import com.project.NexPay.Comman.Entity.Money;
-import com.project.NexPay.Comman.Enum.PaymentMethod;
-import com.project.NexPay.Comman.Enum.PaymentStatus;
-import com.project.NexPay.Merchant.Entity.Merchant;
+import com.project.NexPay.comman.entity.Money;
+import com.project.NexPay.comman.enums.PaymentMethod;
+import com.project.NexPay.comman.enums.PaymentStatus;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.JdbcTypeCode;
