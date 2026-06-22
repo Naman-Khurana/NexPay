@@ -9,7 +9,7 @@ import com.project.NexPay.merchant.entity.Merchant;
 import com.project.NexPay.merchant.repository.AppUserRespository;
 import com.project.NexPay.merchant.repository.MerchantRepository;
 import com.project.NexPay.merchant.service.AuthService;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
