@@ -7,6 +7,7 @@ import lombok.*;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
+import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.UUID;
 
@@ -27,7 +28,8 @@ public class OrderRecord {
     @Column(name = "merchant_id", nullable = false)
     private UUID merchantId;
 
-//    private String idempotencyKey;
+    @Column(length = 100)
+    private String receipt;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -39,10 +41,15 @@ public class OrderRecord {
     private Map<String,Object> notes;
 
     @Embedded
-    private Money amountPaise;
+    private Money amount;
 
     @Column(nullable=false)
     @Builder.Default
     private Integer attempts = 0;
+
+    private LocalDateTime expiresAt;
+
+
+
 
 }

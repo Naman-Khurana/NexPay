@@ -1,10 +1,13 @@
 package com.project.NexPay.comman.entity;
 
 import jakarta.persistence.Embeddable;
-import lombok.AllArgsConstructor;
+import lombok.*;
 
 @Embeddable
 @AllArgsConstructor
+@NoArgsConstructor
+@Getter
+@EqualsAndHashCode
 public class Money {
 
     private int amountUnits;
