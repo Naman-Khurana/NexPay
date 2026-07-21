@@ -12,7 +12,11 @@ import java.util.Map;
 import java.util.UUID;
 
 @Entity
-@Table(name = "order_record")
+@Table(name = "order_record",
+        indexes = {
+                @Index(name = "Idx_order_id_merchant_id", columnList = "id, merchant_id"),
+                @Index(name = "idx_order_merchant_id", columnList = "merchant_id")
+        })
 @Getter
 @Setter
 @NoArgsConstructor
@@ -38,18 +42,16 @@ public class OrderRecord {
 
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(columnDefinition = "jsonb")
-    private Map<String,Object> notes;
+    private Map<String, Object> notes;
 
     @Embedded
     private Money amount;
 
-    @Column(nullable=false)
+    @Column(nullable = false)
     @Builder.Default
     private Integer attempts = 0;
 
     private LocalDateTime expiresAt;
-
-
 
 
 }

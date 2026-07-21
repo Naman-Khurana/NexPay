@@ -10,7 +10,10 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
-@Table(name = "payment_transition_log")
+@Table(name = "payment_transition_log",
+        indexes = {
+                @Index(name = "idx_payment_transition_log_payment_id",columnList = "payment_id")
+        })
 @Getter
 @Setter
 @NoArgsConstructor
@@ -22,7 +25,7 @@ public class PaymentTransitionLog {
     @Column(name = "id")
     private UUID id;
 
-    @ManyToOne(fetch = FetchType.LAZY,optional = false)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "payment_id", nullable = false)
     private Payment payment;
 

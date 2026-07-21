@@ -13,7 +13,11 @@ import java.util.Map;
 import java.util.UUID;
 
 @Entity
-@Table(name = "payment")
+@Table(name = "payment",
+        indexes = {
+                @Index(name = "idx_payment_order_id", columnList = "order_id"),
+                @Index(name = "idx_payment_merchant_id", columnList = "merchant_id")
+        })
 @Getter
 @Setter
 @NoArgsConstructor
@@ -25,7 +29,7 @@ public class Payment {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @ManyToOne(fetch = FetchType.LAZY,optional = false)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "order_id", nullable = false)
     private OrderRecord order;
 
@@ -40,17 +44,17 @@ public class Payment {
     @Embedded
     private Money amountPaise;
 
-    @Column(nullable = false,length = 20)
+    @Column(nullable = false, length = 20)
     @Enumerated(EnumType.STRING)
     private PaymentStatus status;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false,length = 20)
+    @Column(nullable = false, length = 20)
     private PaymentMethod method;
 
     @JdbcTypeCode(SqlTypes.JSON)
-    @Column(name = "method_details",columnDefinition = "jsonb")
-    private Map<String,Object> methodDetails;
+    @Column(name = "method_details", columnDefinition = "jsonb")
+    private Map<String, Object> methodDetails;
 
     @Column(length = 100)
     private String bankReference;
@@ -70,9 +74,6 @@ public class Payment {
     private LocalDateTime refundedAt;
 
     private LocalDateTime settledAt;
-
-
-
 
 
 }

@@ -6,7 +6,11 @@ import lombok.*;
 import java.util.UUID;
 
 @Entity
-@Table(name = "customer")
+@Table(name = "customer" ,
+        indexes ={
+                @Index(name = "idx_customer_merchant_id", columnList = "merchant_id"),
+                @Index(name = "idx_customer_email",columnList = "email")
+        } )
 @Getter
 @Setter
 @NoArgsConstructor
