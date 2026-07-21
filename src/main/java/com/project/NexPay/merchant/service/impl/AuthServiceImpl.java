@@ -1,11 +1,13 @@
 package com.project.NexPay.merchant.service.impl;
 
+import com.project.NexPay.comman.enums.MerchantStatus;
 import com.project.NexPay.comman.enums.UserRole;
 import com.project.NexPay.comman.exception.DuplicateResourceException;
 import com.project.NexPay.merchant.dto.request.MerchantSignupRequest;
 import com.project.NexPay.merchant.dto.response.MerchantResponse;
 import com.project.NexPay.merchant.entity.AppUser;
 import com.project.NexPay.merchant.entity.Merchant;
+import com.project.NexPay.merchant.mapper.MerchantMapper;
 import com.project.NexPay.merchant.repository.AppUserRespository;
 import com.project.NexPay.merchant.repository.MerchantRepository;
 import com.project.NexPay.merchant.service.AuthService;
@@ -21,6 +23,7 @@ public class AuthServiceImpl implements AuthService {
 
     private final MerchantRepository merchantRepository;
     private final AppUserRespository appUserRespository;
+    private final MerchantMapper merchantMapper;
 
     @Transactional
     @Override
@@ -29,13 +32,8 @@ public class AuthServiceImpl implements AuthService {
             throw new DuplicateResourceException("DUPLICATE_MERCHANT_EMAIL","Merchant with email already exists : "+ merchantSignupRequest.email());
         }
 
-        Merchant merchant= Merchant
-                .builder()
-                .businessName(merchantSignupRequest.businessName())
-                .businessType(merchantSignupRequest.businessType())
-                .name(merchantSignupRequest.name())
-                .email(merchantSignupRequest.email())
-                .build();
+        Merchant merchant= merchantMapper.toEntityFromSignUpRequest(merchantSignupRequest);
+        merchant.setStatus(MerchantStatus.KYC_PENDING);
 
         merchantRepository.save(merchant);
 
@@ -49,9 +47,7 @@ public class AuthServiceImpl implements AuthService {
 
         appUserRespository.save(appUser);
 
-        //TODO : change and do conversion from merchant -> merchant response using mapper
-        return new MerchantResponse(merchant.getId(),merchant.getName(),merchant.getEmail(),appUser.getPasswordHash(),merchant.getBusinessName(),merchant.getBusinessType());
-
+        return merchantMapper.toResponse(merchant);
 
     }
 }

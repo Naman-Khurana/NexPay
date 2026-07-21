@@ -7,9 +7,11 @@ import com.project.NexPay.merchant.dto.response.ApiKeyCreateResponse;
 import com.project.NexPay.merchant.dto.response.ApiKeyResponse;
 import com.project.NexPay.merchant.entity.ApiKey;
 import com.project.NexPay.merchant.entity.Merchant;
+import com.project.NexPay.merchant.mapper.ApiKeyMapper;
 import com.project.NexPay.merchant.repository.ApiKeyRepository;
 import com.project.NexPay.merchant.repository.MerchantRepository;
 import com.project.NexPay.merchant.service.ApiKeyService;
+import com.project.NexPay.payment.dto.response.OrderResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -27,6 +29,7 @@ public class ApiKeyServiceImpl implements ApiKeyService {
 
     private final MerchantRepository merchantRepository;
     private final ApiKeyRepository apiKeyRepository;
+    private final ApiKeyMapper apiKeyMapper;
 
 
 
@@ -53,17 +56,8 @@ public class ApiKeyServiceImpl implements ApiKeyService {
     @Override
     public List<ApiKeyResponse> listByMerchant(UUID merchantId) {
 
+        return apiKeyMapper.toResponseList(apiKeyRepository.findByMerchant_Id(merchantId));
 
-        return apiKeyRepository.findByMerchant_Id(merchantId)
-                .stream()
-                .map(apiKey -> new ApiKeyResponse(
-                        apiKey.getId(),
-                        apiKey.getKeyId(),
-                        apiKey.getEnvironment(),
-                        apiKey.isEnabled(),
-                        apiKey.getLastUsedAt(),
-                        null
-                )).toList();
     }
 
     @Transactional
@@ -84,6 +78,8 @@ public class ApiKeyServiceImpl implements ApiKeyService {
                 new ResourceNotFoundException("ApiKey" ,keyId)
         );
 
+        //TODO : replace this with a Custom Exception
+        if(!apiKey.isEnabled()) throw new RuntimeException("Cannot Rotate a disabled key");
         String newRawKeySecretHash = RandomizerUtil.randomBase64(40);
 
         apiKey.setPreviousKeySecretHash(apiKey.getKeySecretHash());
@@ -91,7 +87,7 @@ public class ApiKeyServiceImpl implements ApiKeyService {
         apiKey.setRotatedAt(LocalDateTime.now());
         apiKey.setGracePeriodExpiresAt(LocalDateTime.now().plusDays(2));
 
-        return new ApiKeyCreateResponse(apiKey.getId(), apiKey.getKeyId(),apiKey.getKeySecretHash(),apiKey.getEnvironment());
+        return new ApiKeyCreateResponse(apiKey.getId(), apiKey.getKeyId(),newRawKeySecretHash,apiKey.getEnvironment());
 
 
 
