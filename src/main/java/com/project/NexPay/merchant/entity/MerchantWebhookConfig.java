@@ -1,5 +1,6 @@
 package com.project.NexPay.merchant.entity;
 
+import com.project.NexPay.comman.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -15,7 +16,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class MerchantWebhookConfig {
+public class MerchantWebhookConfig extends BaseEntity {
 
     @Id
     @Column(name = "id")

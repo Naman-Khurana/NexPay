@@ -1,5 +1,6 @@
 package com.project.NexPay.operations.entity;
 
+import com.project.NexPay.comman.entity.BaseEntity;
 import com.project.NexPay.comman.enums.WebhookEventStatus;
 import com.project.NexPay.comman.enums.WebhookEventType;
 import jakarta.persistence.*;
@@ -20,7 +21,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class WebhookEvent {
+public class WebhookEvent extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)

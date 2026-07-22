@@ -1,5 +1,6 @@
 package com.project.NexPay.operations.entity;
 
+import com.project.NexPay.comman.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.JdbcTypeCode;
@@ -20,7 +21,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class DlqEvent {
+public class DlqEvent extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy= GenerationType.UUID)

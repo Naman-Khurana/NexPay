@@ -1,5 +1,6 @@
 package com.project.NexPay.payment.entity;
 
+import com.project.NexPay.comman.entity.BaseEntity;
 import com.project.NexPay.comman.entity.Money;
 import com.project.NexPay.comman.enums.PaymentMethod;
 import com.project.NexPay.comman.enums.PaymentStatus;
@@ -23,7 +24,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Payment {
+public class Payment extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)

@@ -1,5 +1,6 @@
 package com.project.NexPay.merchant.entity;
 
+import com.project.NexPay.comman.entity.BaseEntity;
 import com.project.NexPay.comman.enums.UserRole;
 import jakarta.persistence.*;
 import lombok.*;
@@ -16,7 +17,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class AppUser {
+public class AppUser extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)

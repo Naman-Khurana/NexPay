@@ -1,5 +1,6 @@
 package com.project.NexPay.payment.entity;
 
+import com.project.NexPay.comman.entity.BaseEntity;
 import com.project.NexPay.comman.entity.Money;
 import com.project.NexPay.comman.enums.OrderStatus;
 import jakarta.persistence.*;
@@ -22,7 +23,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class OrderRecord {
+public class OrderRecord extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)

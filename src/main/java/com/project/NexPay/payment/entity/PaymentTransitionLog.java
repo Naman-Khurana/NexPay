@@ -1,5 +1,6 @@
 package com.project.NexPay.payment.entity;
 
+import com.project.NexPay.comman.entity.BaseEntity;
 import com.project.NexPay.comman.enums.PaymentActor;
 import com.project.NexPay.comman.enums.PaymentEvent;
 import com.project.NexPay.comman.enums.PaymentStatus;
@@ -19,7 +20,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class PaymentTransitionLog {
+public class PaymentTransitionLog extends BaseEntity {
 
     @Id
     @Column(name = "id")

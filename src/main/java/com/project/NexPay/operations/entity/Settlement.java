@@ -1,5 +1,6 @@
 package com.project.NexPay.operations.entity;
 
+import com.project.NexPay.comman.entity.BaseEntity;
 import com.project.NexPay.comman.entity.Money;
 import com.project.NexPay.comman.enums.SettlementStatus;
 import jakarta.persistence.*;
@@ -14,7 +15,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Settlement {
+public class Settlement extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)

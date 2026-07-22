@@ -1,5 +1,6 @@
 package com.project.NexPay.operations.entity;
 
+import com.project.NexPay.comman.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
