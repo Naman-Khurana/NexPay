@@ -10,6 +10,8 @@ import com.project.NexPay.payment.entity.OrderRecord;
 import com.project.NexPay.payment.entity.Payment;
 import com.project.NexPay.payment.gateway.PaymentGatewayRouter;
 import com.project.NexPay.payment.gateway.dto.PaymentRequest;
+import com.project.NexPay.payment.gateway.dto.PaymentResult;
+import com.project.NexPay.payment.mapper.PaymentMapper;
 import com.project.NexPay.payment.repository.OrderRepository;
 import com.project.NexPay.payment.repository.PaymentRepository;
 import com.project.NexPay.payment.service.PaymentService;
@@ -30,6 +32,7 @@ public class PaymentServiceImpl implements PaymentService {
     private final OrderRepository orderRepository;
     private final PaymentRepository paymentRepository;
     private final PaymentGatewayRouter paymentGatewayRouter;
+    private final PaymentMapper paymentMapper;
 
     @Override
     @Transactional
@@ -59,8 +62,19 @@ public class PaymentServiceImpl implements PaymentService {
 
         PaymentRequest paymentRequest =new PaymentRequest(payment.getId(),order.getId(),merchantId,order.getAmount(),request.method(),request.methodDetails());
 
-        paymentGatewayRouter.initiate(paymentRequest);
+        PaymentResult result=paymentGatewayRouter.initiate(paymentRequest);
 
-        return null;
+        switch (result) {
+            case PaymentResult.Pending pending -> payment.setProcessorReference(pending.registrationReference());
+            case PaymentResult.Failure failure -> {
+                payment.setStatus(PaymentStatus.FAILED);
+                payment.setErrorCode(failure.errorCode());
+                payment.setErrorDescription(failure.errorDescription());
+            }
+        }
+
+        paymentRepository.save(payment);
+
+        return paymentMapper.toResponse(payment);
     }
 }
