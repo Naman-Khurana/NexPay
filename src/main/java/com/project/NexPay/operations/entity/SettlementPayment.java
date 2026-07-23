@@ -13,7 +13,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class SettlementPayment {
+public class SettlementPayment extends BaseEntity{
 
     @EmbeddedId
     private SettlementPaymentId id;

@@ -43,7 +43,7 @@ public class Payment extends BaseEntity {
 
 
     @Embedded
-    private Money amountPaise;
+    private Money amount;
 
     @Column(nullable = false, length = 20)
     @Enumerated(EnumType.STRING)

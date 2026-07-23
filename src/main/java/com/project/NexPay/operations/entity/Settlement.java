@@ -15,7 +15,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Settlement extends BaseEntity {
+public class Settlement extends  BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
