@@ -2,12 +2,16 @@ package com.project.NexPay.payment.gateway.dto;
 
 public sealed interface PaymentResult permits
         PaymentResult.Failure,
-        PaymentResult.Pending
+        PaymentResult.Pending,
+        PaymentResult.Success
+
 {
 
     record Pending(String registrationReference) implements PaymentResult{}
 
     record Failure(String errorCode,String errorDescription) implements PaymentResult{}
+
+    record Success(String bankReference) implements PaymentResult{}
 
 
 }
