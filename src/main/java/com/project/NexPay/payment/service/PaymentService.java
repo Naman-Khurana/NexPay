@@ -9,4 +9,5 @@ public interface PaymentService {
 
     PaymentResponse initiate(UUID merchantId, PaymentInitRequest request);
 
+    PaymentResponse capture(UUID paymentId, UUID merchantId);
 }

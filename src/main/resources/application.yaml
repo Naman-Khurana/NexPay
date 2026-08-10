@@ -2,7 +2,7 @@ spring:
   application:
     name: NexPay
   datasource:
-    url: ${DB_URL:jdbc:postgresql://localhost:5433/nexpayDB}
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/nexpayDB}
     username: ${DB_USER:postgres}
     password: ${DB_PASS:naman1234}
   jpa:

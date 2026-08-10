@@ -1,5 +1,6 @@
 package com.project.NexPay.payment.gateway.adapter;
 
+import com.project.NexPay.comman.Constants;
 import com.project.NexPay.comman.enums.PaymentMethod;
 import com.project.NexPay.comman.exception.ErrorCodes;
 import com.project.NexPay.payment.gateway.PaymentAdapter;
@@ -11,6 +12,8 @@ import com.project.NexPay.payment.processor.dto.PaymentProcessorResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+
+import java.util.UUID;
 
 @Component
 @Slf4j
@@ -46,5 +49,10 @@ public class NetBankingAdapter implements PaymentAdapter {
         }
 
 
+    }
+
+    @Override
+    public PaymentResult capture(UUID paymentId) {
+        return new PaymentResult.Success(Constants.Nbk.NBK_REF);
     }
 }

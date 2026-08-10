@@ -20,6 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 import static com.project.NexPay.comman.exception.ErrorCodes.ORDER_NOT_PAYABLE;
@@ -77,6 +78,30 @@ public class PaymentServiceImpl implements PaymentService {
         }
 
         paymentRepository.save(payment);
+
+        return paymentMapper.toResponse(payment);
+    }
+
+    @Override
+    @Transactional
+    public PaymentResponse capture(UUID paymentId, UUID merchantId)   {
+        Payment payment = paymentRepository.findByIdAndMerchantId(paymentId,merchantId).
+                orElseThrow(() -> new ResourceNotFoundException("Payment",paymentId));
+
+        payment.setStatus(PaymentStatus.CAPTURING); //TODO: State machine
+
+        PaymentResult paymentResult= paymentGatewayRouter.capture(payment.getMethod(),paymentId);
+
+        if(paymentResult instanceof PaymentResult.Success success){
+            log.info("Payment captured, paymentId: {}",paymentId);
+            payment.setStatus(PaymentStatus.CAPTURED);
+            payment.setCapturedAt(LocalDateTime.now());
+        }else if(paymentResult instanceof PaymentResult.Failure failure){
+            payment.setStatus(PaymentStatus.AUTHORIZED);
+            payment.setErrorCode(failure.errorCode());
+            payment.setErrorDescription(failure.errorDescription());
+            log.warn("Payment capture failed,paymentId : {}", paymentId);
+        }
 
         return paymentMapper.toResponse(payment);
     }
