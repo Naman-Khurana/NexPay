@@ -1,6 +1,7 @@
 package com.project.NexPay.payment.service.impl;
 
 import com.project.NexPay.comman.enums.OrderStatus;
+import com.project.NexPay.comman.enums.PaymentEvent;
 import com.project.NexPay.comman.enums.PaymentStatus;
 import com.project.NexPay.comman.exception.BusinessRuleViolationException;
 import com.project.NexPay.comman.exception.ResourceNotFoundException;
@@ -15,6 +16,7 @@ import com.project.NexPay.payment.mapper.PaymentMapper;
 import com.project.NexPay.payment.repository.OrderRepository;
 import com.project.NexPay.payment.repository.PaymentRepository;
 import com.project.NexPay.payment.service.PaymentService;
+import com.project.NexPay.payment.stateMachine.PaymentTransitionService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -34,6 +36,7 @@ public class PaymentServiceImpl implements PaymentService {
     private final PaymentRepository paymentRepository;
     private final PaymentGatewayRouter paymentGatewayRouter;
     private final PaymentMapper paymentMapper;
+    private final PaymentTransitionService paymentTransitionService;
 
     @Override
     @Transactional
@@ -68,7 +71,7 @@ public class PaymentServiceImpl implements PaymentService {
         switch (result) {
             case PaymentResult.Pending pending -> payment.setProcessorReference(pending.registrationReference());
             case PaymentResult.Failure failure -> {
-                payment.setStatus(PaymentStatus.FAILED);
+                paymentTransitionService.apply(payment, PaymentEvent.AUTHORIZE_FAIL);
                 payment.setErrorCode(failure.errorCode());
                 payment.setErrorDescription(failure.errorDescription());
             }
@@ -79,6 +82,8 @@ public class PaymentServiceImpl implements PaymentService {
 
         paymentRepository.save(payment);
 
+        //TODO: send outbox(kafka event)
+
         return paymentMapper.toResponse(payment);
     }
 
@@ -88,20 +93,22 @@ public class PaymentServiceImpl implements PaymentService {
         Payment payment = paymentRepository.findByIdAndMerchantId(paymentId,merchantId).
                 orElseThrow(() -> new ResourceNotFoundException("Payment",paymentId));
 
-        payment.setStatus(PaymentStatus.CAPTURING); //TODO: State machine
+        paymentTransitionService.apply(payment,PaymentEvent.CAPTURE_REQUEST);
 
         PaymentResult paymentResult= paymentGatewayRouter.capture(payment.getMethod(),paymentId);
 
         if(paymentResult instanceof PaymentResult.Success success){
             log.info("Payment captured, paymentId: {}",paymentId);
-            payment.setStatus(PaymentStatus.CAPTURED);
+            paymentTransitionService.apply(payment,PaymentEvent.CAPTURE_SUCCESS);
             payment.setCapturedAt(LocalDateTime.now());
         }else if(paymentResult instanceof PaymentResult.Failure failure){
-            payment.setStatus(PaymentStatus.AUTHORIZED);
+            paymentTransitionService.apply(payment,PaymentEvent.CAPTURE_FAIL);
             payment.setErrorCode(failure.errorCode());
             payment.setErrorDescription(failure.errorDescription());
             log.warn("Payment capture failed,paymentId : {}", paymentId);
         }
+
+        //TODO: send outbox(kafka event)
 
         return paymentMapper.toResponse(payment);
     }
