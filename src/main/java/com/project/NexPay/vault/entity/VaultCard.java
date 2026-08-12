@@ -1,6 +1,7 @@
 package com.project.NexPay.vault.entity;
 
 import com.project.NexPay.comman.entity.BaseEntity;
+import com.project.NexPay.comman.enums.CardBrand;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -30,7 +31,7 @@ public class VaultCard extends BaseEntity {
     private String lastFour;
 
     @Column(nullable = false)
-    private String brand;   // VISA, MASTERCARD, RUPAY
+    private CardBrand brand;   // VISA, MASTERCARD, RUPAY
 
     @Column(nullable = false,length = 6)
     private String bin; // first 6 digits
@@ -42,6 +43,7 @@ public class VaultCard extends BaseEntity {
     private String expiryYear;
 
     @Column(nullable = false)
+
     private String cardHolderName;
 
     private LocalDateTime deletedAt;
