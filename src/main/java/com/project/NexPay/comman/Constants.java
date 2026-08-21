@@ -23,6 +23,13 @@ public class Constants {
         public static final String TOKEN =  "token";
         public static final String CARD_PROCESSOR_ = "CARD_PROCESSOR_";
     }
+
+    public static final class BankSimulator{
+        public static final String SIM_BANK_REF="SIM_BANK_REF";
+        public static final String SIM_BANK_ERROR_CODE="SIM_BANK_ERROR_CODE";
+    }
+
+
 }
 
 
