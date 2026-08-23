@@ -23,7 +23,7 @@ import java.util.UUID;
 public class PaymentTransitionLog extends BaseEntity {
 
     @Id
-    @Column(name = "id")
+    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)

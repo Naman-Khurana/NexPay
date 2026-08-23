@@ -7,7 +7,7 @@ spring:
     password: ${DB_PASS:naman1234}
   jpa:
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: update
     show-sql: true
     properties:
       hibernate:
@@ -33,3 +33,6 @@ payment:
         min-delay-seconds: 4
         max-delay-seconds: 10
         success-rate: 80
+
+mock:
+  merchantId: 50ea4949-0e2f-40a4-8435-4f4653e4b739

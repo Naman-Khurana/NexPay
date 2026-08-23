@@ -5,14 +5,16 @@ import com.project.NexPay.comman.util.RandomizerUtil;
 import com.project.NexPay.payment.processor.PaymentProcessor;
 import com.project.NexPay.payment.processor.dto.PaymentProcessorRequest;
 import com.project.NexPay.payment.processor.dto.PaymentProcessorResponse;
+import org.springframework.stereotype.Component;
 
+@Component
 public class NetBankingPaymentProcessor implements PaymentProcessor {
     @Override
     public PaymentProcessorResponse charge(PaymentProcessorRequest request) {
 
         String BANK_CODE_FAIL= "BANK_CODE_FAIL";
 
-        String bankCode = request.methodDetails() != null ? request.methodDetails().get("BANK").toString() : null ;
+        String bankCode = request.methodDetails() != null ? request.methodDetails().get("bank").toString() : null ;
 
         //simulation
         if(BANK_CODE_FAIL.equals(bankCode)){

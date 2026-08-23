@@ -5,6 +5,7 @@ import com.project.NexPay.comman.enums.PaymentEvent;
 import com.project.NexPay.comman.enums.PaymentStatus;
 import com.project.NexPay.comman.exception.BusinessRuleViolationException;
 import com.project.NexPay.comman.exception.ResourceNotFoundException;
+import com.project.NexPay.comman.util.RandomizerUtil;
 import com.project.NexPay.payment.dto.request.PaymentInitRequest;
 import com.project.NexPay.payment.dto.response.PaymentResponse;
 import com.project.NexPay.payment.entity.OrderRecord;
@@ -58,6 +59,7 @@ public class PaymentServiceImpl implements PaymentService {
                 .merchantId(merchantId)
                 .amount(order.getAmount())
                 .status(PaymentStatus.CREATED)
+                .idempotencyKey(UUID.randomUUID().toString())
                 .method(request.method())
                 .methodDetails(request.methodDetails())
                 .build();
@@ -117,6 +119,7 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     @Override
+    @Transactional
     public void resolveAuthorize(UUID paymentId, boolean approve, String bankRef, String errorCode, String errorDescription) {
         Payment payment= paymentRepository.findById(paymentId)
                 .orElseThrow(() ->new ResourceNotFoundException("PAYMENT",paymentId));

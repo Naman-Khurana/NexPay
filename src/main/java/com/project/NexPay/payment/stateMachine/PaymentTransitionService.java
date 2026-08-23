@@ -26,7 +26,7 @@ public class PaymentTransitionService {
     @Transactional
     public PaymentStatus apply(Payment payment, PaymentEvent event){
         PaymentStatus next= stateMachine.transition(payment.getStatus(),event);
-        payment.setStatus(next);
+
         PaymentTransitionLog log = PaymentTransitionLog.builder()
                 .payment(payment)
                 .eventType(event)
@@ -35,6 +35,8 @@ public class PaymentTransitionService {
                 .toStatus(next)
                 .occurredAt(LocalDateTime.now())
                 .build();
+
+        payment.setStatus(next);
 
 
         paymentTransitionLogRepository.save(log);

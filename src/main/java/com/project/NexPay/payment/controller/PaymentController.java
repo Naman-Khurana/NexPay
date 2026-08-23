@@ -6,23 +6,24 @@ import com.project.NexPay.payment.service.PaymentService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
 
-@RestController("/v1/payments")
+@RestController
 @RequiredArgsConstructor
+@RequestMapping("/v1/payments")
 @Slf4j
 public class PaymentController {
 
     private final PaymentService paymentService;
 
-    UUID merchantId = UUID.fromString("9c86bf71-bcb0-4fa9-a6c2-e2a5ec63f5dd"); //TODO : replace and get merchant id from merchant context
+    @Value("${mock.merchantId}")
+    private UUID merchantId; //TODO : replace and get merchant id from merchant context
+//    private UUID merchantId = UUID.fromString("5ed2d6a6-5194-408e-b87e-db5b7bb5cc77"); //TODO : replace and get merchant id from merchant context
 
     @PostMapping()
     public ResponseEntity<PaymentResponse> initiate(@Valid @RequestBody PaymentInitRequest request) {
