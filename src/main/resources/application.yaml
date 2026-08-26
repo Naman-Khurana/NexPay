@@ -36,3 +36,6 @@ payment:
 
 mock:
   merchantId: 50ea4949-0e2f-40a4-8435-4f4653e4b739
+
+jwt:
+  secret-key: dont-use-prod-kdkrf2i3hgr92h3r2hig92egf920nd2iuh18fweg54

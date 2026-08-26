@@ -1,6 +1,8 @@
 package com.project.NexPay.merchant.controller;
 
+import com.project.NexPay.merchant.dto.request.LoginRequest;
 import com.project.NexPay.merchant.dto.request.MerchantSignupRequest;
+import com.project.NexPay.merchant.dto.response.LoginResponse;
 import com.project.NexPay.merchant.dto.response.MerchantResponse;
 import com.project.NexPay.merchant.service.AuthService;
 import jakarta.validation.Valid;
@@ -25,5 +27,10 @@ public class AuthController {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(authService.signup(merchantSignupRequest));
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<LoginResponse> login(@RequestBody @Valid LoginRequest request){
+        return ResponseEntity.ok(authService.login(request));
     }
 }

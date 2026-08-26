@@ -24,7 +24,7 @@ public class BankCallbackSimulator {
     private final SimulatorConfig simulatorConfig;
     private final PaymentService paymentService;
 
-    @Scheduled(fixedDelayString = "${payment.simulator.poll-interval-ms:5000}")
+//    @Scheduled(fixedDelayString = "${payment.simulator.poll-interval-ms:5000}") //TODO: uncomment it after dev completes
     public void processCallbacks(){
         LocalDateTime window=LocalDateTime.now().minusSeconds(1);
 

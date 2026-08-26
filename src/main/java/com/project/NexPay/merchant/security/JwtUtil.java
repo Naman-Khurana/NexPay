@@ -1,0 +1,46 @@
+package com.project.NexPay.merchant.security;
+
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
+import org.springframework.beans.factory.annotation.Value;
+
+import javax.crypto.SecretKey;
+import io.jsonwebtoken.security.Keys;
+import org.springframework.stereotype.Component;
+
+import java.nio.charset.StandardCharsets;
+import java.time.Instant;
+import java.util.Date;
+import java.util.UUID;
+
+@Component
+public class JwtUtil {
+
+    @Value("${jwt.secret-key}")
+    private String secretKey;
+
+    private SecretKey getSecretKey(){
+        return Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
+    }
+
+    public String generateAccessToken(String email, UUID merchantId, String role){
+        Instant now = Instant.now();
+        return Jwts.builder()
+                .subject(email)
+                .issuedAt(Date.from(now))
+                .expiration(Date.from(now.plusSeconds(60*100)))
+                .claim("merchant_id",merchantId)
+                .claim("role",role)
+                .signWith(getSecretKey())
+                .compact();
+    }
+
+    public Claims verifyAccessToken(String token){
+        return Jwts.parser()
+                .verifyWith(getSecretKey())
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
+    }
+
+}
