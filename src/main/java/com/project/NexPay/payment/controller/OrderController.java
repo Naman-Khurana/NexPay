@@ -1,5 +1,6 @@
 package com.project.NexPay.payment.controller;
 
+import com.project.NexPay.merchant.security.MerchantContext;
 import com.project.NexPay.payment.dto.request.CreateOrderRequest;
 import com.project.NexPay.payment.dto.response.OrderResponse;
 import com.project.NexPay.payment.service.OrderService;
@@ -21,16 +22,13 @@ import java.util.UUID;
 public class OrderController {
 
     private final OrderService orderService;
-
-    @Value("${mock.merchantId}")
-    private UUID merchantId; //TODO : replace and get merchant id from merchant context
-//    UUID merchantId= UUID.fromString("5ed2d6a6-5194-408e-b87e-db5b7bb5cc77"); //TODO : replace and get merchant id from merchant context
+    private final MerchantContext merchantContext;
 
     @PostMapping
     public ResponseEntity<OrderResponse> create(@RequestBody @Valid CreateOrderRequest request){
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body(orderService.create( merchantId,request));
+                .body(orderService.create( merchantContext.getMerchantId(),request));
     }
 
 }

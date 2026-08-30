@@ -1,5 +1,6 @@
 package com.project.NexPay.payment.controller;
 
+import com.project.NexPay.merchant.security.MerchantContext;
 import com.project.NexPay.payment.dto.request.PaymentInitRequest;
 import com.project.NexPay.payment.dto.response.PaymentResponse;
 import com.project.NexPay.payment.service.PaymentService;
@@ -20,22 +21,20 @@ import java.util.UUID;
 public class PaymentController {
 
     private final PaymentService paymentService;
+    private final MerchantContext merchantContext;
 
-    @Value("${mock.merchantId}")
-    private UUID merchantId; //TODO : replace and get merchant id from merchant context
-//    private UUID merchantId = UUID.fromString("5ed2d6a6-5194-408e-b87e-db5b7bb5cc77"); //TODO : replace and get merchant id from merchant context
 
     @PostMapping()
     public ResponseEntity<PaymentResponse> initiate(@Valid @RequestBody PaymentInitRequest request) {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body(paymentService.initiate(merchantId, request));
+                .body(paymentService.initiate(merchantContext.getMerchantId(), request));
     }
 
 
     @PostMapping("/{paymentId}/capture")
     public ResponseEntity<PaymentResponse> capture(@PathVariable UUID paymentId){
-        return ResponseEntity.ok(paymentService.capture(paymentId,merchantId    ));
+        return ResponseEntity.ok(paymentService.capture(paymentId,merchantContext.getMerchantId()    ));
 
     }
 }
