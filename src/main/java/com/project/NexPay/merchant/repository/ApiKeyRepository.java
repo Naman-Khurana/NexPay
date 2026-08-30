@@ -15,4 +15,5 @@ public interface ApiKeyRepository extends JpaRepository<ApiKey, UUID> {
 
     Optional<ApiKey> findByIdAndMerchant_Id(UUID keyId,UUID merchantId);
 
+    Optional<ApiKey> findByKeyId(String keyId);
 }

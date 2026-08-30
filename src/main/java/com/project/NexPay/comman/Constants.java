@@ -29,6 +29,12 @@ public class Constants {
         public static final String SIM_BANK_ERROR_CODE="SIM_BANK_ERROR_CODE";
     }
 
+    public static final class Security{
+        public static final String AUTHORIZATION_HEADER = "Authorization";
+        public static final String BASIC_PREFIX = "Basic ";
+        public static final String BEARER_PREFIX = "Bearer";
+    }
+
 
 }
 

@@ -18,6 +18,9 @@ import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
 
+import static com.project.NexPay.comman.Constants.Security.AUTHORIZATION_HEADER;
+import static com.project.NexPay.comman.Constants.Security.BEARER_PREFIX;
+
 @Component
 @RequiredArgsConstructor
 @Slf4j
@@ -32,9 +35,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         try {
 
-            final String authorizationHeader= request.getHeader("Authorization");
+            final String authorizationHeader= request.getHeader(AUTHORIZATION_HEADER);
 
-            if(authorizationHeader == null || !authorizationHeader.startsWith("Bearer")){
+            if(authorizationHeader == null || !authorizationHeader.startsWith(BEARER_PREFIX)){
                 filterChain.doFilter(request,response);
                 return;
             }

@@ -14,6 +14,7 @@ import com.project.NexPay.merchant.service.ApiKeyService;
 import com.project.NexPay.payment.dto.response.OrderResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,7 +31,7 @@ public class ApiKeyServiceImpl implements ApiKeyService {
     private final MerchantRepository merchantRepository;
     private final ApiKeyRepository apiKeyRepository;
     private final ApiKeyMapper apiKeyMapper;
-
+    private final PasswordEncoder passwordEncoder;
 
 
     @Transactional
@@ -45,7 +46,7 @@ public class ApiKeyServiceImpl implements ApiKeyService {
                 .builder()
                 .merchant(merchant)
                 .keyId(keyId)
-                .keySecretHash(rawSecret) //TODO : encode with BcryptEncoder
+                .keySecretHash(passwordEncoder.encode(rawSecret))
                 .environment(request.environment())
                 .build();
 
@@ -83,7 +84,7 @@ public class ApiKeyServiceImpl implements ApiKeyService {
         String newRawKeySecretHash = RandomizerUtil.randomBase64(40);
 
         apiKey.setPreviousKeySecretHash(apiKey.getKeySecretHash());
-        apiKey.setKeySecretHash(newRawKeySecretHash);  // TODO :  encode with BcryptEncoder
+        apiKey.setKeySecretHash(passwordEncoder.encode(newRawKeySecretHash));
         apiKey.setRotatedAt(LocalDateTime.now());
         apiKey.setGracePeriodExpiresAt(LocalDateTime.now().plusDays(2));
 
