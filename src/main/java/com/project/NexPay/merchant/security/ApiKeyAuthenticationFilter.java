@@ -1,7 +1,10 @@
 package com.project.NexPay.merchant.security;
 
 import com.project.NexPay.comman.Constants;
+import com.project.NexPay.merchant.cache.ApiKeyCache;
+import com.project.NexPay.merchant.cache.entry.ApiKeyCacheEntry;
 import com.project.NexPay.merchant.entity.ApiKey;
+import com.project.NexPay.merchant.mapper.ApiKeyMapper;
 import com.project.NexPay.merchant.repository.ApiKeyRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -23,6 +26,7 @@ import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.Base64;
 import java.util.List;
+import java.util.Optional;
 
 import static com.project.NexPay.comman.Constants.Security.AUTHORIZATION_HEADER;
 import static com.project.NexPay.comman.Constants.Security.BASIC_PREFIX;
@@ -37,6 +41,8 @@ public class  ApiKeyAuthenticationFilter extends OncePerRequestFilter {
     private final BCryptPasswordEncoder passwordEncoder= new BCryptPasswordEncoder();
     private final MerchantContext merchantContext;
     private final HandlerExceptionResolver handlerExceptionResolver;
+    private final ApiKeyCache apiKeyCache;
+    private final ApiKeyMapper apiKeyMapper;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -62,11 +68,9 @@ public class  ApiKeyAuthenticationFilter extends OncePerRequestFilter {
             String keyId = credentials[0];
             String rawSecret = credentials[1];
 
-            ApiKey apiKey = apiKeyRepository.findByKeyId(keyId)
-                    .orElseThrow(() ->  new BadRequestException("Invalid or missing API Key"));
+            ApiKeyCacheEntry apiKeyEntry = apiKeyCache.get(keyId).orElseGet(() -> loadAndCache(keyId));
 
-
-            if(!apiKey.isEnabled() || !secretMatches(rawSecret,apiKey)){
+            if(apiKeyEntry == null || !apiKeyEntry.enabled() || !secretMatches(rawSecret,apiKeyEntry)){
                 throw new BadRequestException("Invalid or Missing API Key");
             }
 
@@ -74,8 +78,8 @@ public class  ApiKeyAuthenticationFilter extends OncePerRequestFilter {
                      List.of(new SimpleGrantedAuthority("API_KEY_ROLE")));
 
             SecurityContextHolder.getContext().setAuthentication(auth);
-            merchantContext.setMerchantId(apiKey.getMerchant().getId());
-            merchantContext.setKeyId(apiKey.getKeyId());
+            merchantContext.setMerchantId(apiKeyEntry.merchantId());
+            merchantContext.setKeyId(apiKeyEntry.keyId());
 
             filterChain.doFilter(request,response);
         } catch (Exception e) {
@@ -84,16 +88,36 @@ public class  ApiKeyAuthenticationFilter extends OncePerRequestFilter {
 
     }
 
-    private boolean secretMatches(String rawSecret, ApiKey apiKey){
+    private ApiKeyCacheEntry loadAndCache(String keyId) {
 
-        if(passwordEncoder.matches(rawSecret,apiKey.getKeySecretHash())) return true;
+        ApiKey apiKey = apiKeyRepository.findByKeyId(keyId).orElse(null);
+        if(apiKey == null)  return null;
 
-        boolean isInGracePeriod = apiKey.getGracePeriodExpiresAt() != null &&
-                LocalDateTime.now().isBefore(apiKey.getGracePeriodExpiresAt());
+        ApiKeyCacheEntry apiKeyCacheEntry = new ApiKeyCacheEntry(
+                apiKey.getKeyId(),
+                apiKey.getKeySecretHash(),
+                apiKey.getPreviousKeySecretHash(),
+                apiKey.getGracePeriodExpiresAt(),
+                apiKey.getMerchant().getId(),
+                apiKey.getEnvironment(),
+                apiKey.isEnabled()
+        );
+
+        apiKeyCache.put(keyId,apiKeyCacheEntry);
+        return apiKeyCacheEntry;
+
+    }
+
+    private boolean secretMatches(String rawSecret, ApiKeyCacheEntry apiKey){
+
+        if(passwordEncoder.matches(rawSecret,apiKey.keySecretHash())) return true;
+
+        boolean isInGracePeriod = apiKey.gracePeriodExpiresAt() != null &&
+                LocalDateTime.now().isBefore(apiKey.gracePeriodExpiresAt());
         // secret is replaced but is in grace period
         return isInGracePeriod &&
-                apiKey.getPreviousKeySecretHash() != null &&
-                passwordEncoder.matches(rawSecret,apiKey.getPreviousKeySecretHash());
+                apiKey.previousKeySecretHash() != null &&
+                passwordEncoder.matches(rawSecret,apiKey.previousKeySecretHash());
 
     }
     private String[] decode(String header){

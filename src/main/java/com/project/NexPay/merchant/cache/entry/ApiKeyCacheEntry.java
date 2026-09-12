@@ -3,6 +3,7 @@ package com.project.NexPay.merchant.cache.entry;
 import com.project.NexPay.comman.enums.Environment;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 public record ApiKeyCacheEntry (
 
@@ -10,6 +11,7 @@ public record ApiKeyCacheEntry (
         String keySecretHash,
         String previousKeySecretHash,
         LocalDateTime gracePeriodExpiresAt,
+        UUID merchantId,
         Environment environment,
         boolean enabled
 

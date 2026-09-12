@@ -2,6 +2,7 @@ package com.project.NexPay.merchant.service.impl;
 
 import com.project.NexPay.comman.exception.ResourceNotFoundException;
 import com.project.NexPay.comman.util.RandomizerUtil;
+import com.project.NexPay.merchant.cache.ApiKeyCache;
 import com.project.NexPay.merchant.dto.request.ApiKeyCreateRequest;
 import com.project.NexPay.merchant.dto.response.ApiKeyCreateResponse;
 import com.project.NexPay.merchant.dto.response.ApiKeyResponse;
@@ -32,6 +33,7 @@ public class ApiKeyServiceImpl implements ApiKeyService {
     private final ApiKeyRepository apiKeyRepository;
     private final ApiKeyMapper apiKeyMapper;
     private final PasswordEncoder passwordEncoder;
+    private final ApiKeyCache apiKeyCache;
 
 
     @Transactional
@@ -68,6 +70,8 @@ public class ApiKeyServiceImpl implements ApiKeyService {
                 new ResourceNotFoundException("ApiKey" ,keyId)
         );
 
+        apiKeyCache.evict(apiKey.getKeyId());
+
         apiKey.setEnabled(false);
 
     }
@@ -87,6 +91,8 @@ public class ApiKeyServiceImpl implements ApiKeyService {
         apiKey.setKeySecretHash(passwordEncoder.encode(newRawKeySecretHash));
         apiKey.setRotatedAt(LocalDateTime.now());
         apiKey.setGracePeriodExpiresAt(LocalDateTime.now().plusDays(2));
+
+        apiKeyCache.evict(apiKey.getKeyId());
 
         return new ApiKeyCreateResponse(apiKey.getId(), apiKey.getKeyId(),newRawKeySecretHash,apiKey.getEnvironment());
 

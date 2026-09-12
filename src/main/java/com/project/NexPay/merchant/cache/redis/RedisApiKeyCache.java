@@ -20,8 +20,8 @@ public class RedisApiKeyCache implements ApiKeyCache {
     private static final String PREFIX = "apikey:";
     private static final Duration TTL = Duration.ofMinutes(5);
 
-    private StringRedisTemplate stringRedisTemplate;
-    private ObjectMapper objectMapper;
+    private final StringRedisTemplate stringRedisTemplate;
+    private final ObjectMapper objectMapper;
 
     @Override
     public Optional<ApiKeyCacheEntry> get(String keyId) {
@@ -36,17 +36,26 @@ public class RedisApiKeyCache implements ApiKeyCache {
             return Optional.empty();
 
         }
-
-
     }
 
     @Override
-    public void update(String keyId, ApiKeyCacheEntry apiKeyCacheEntry) {
-
+    public void put(String keyId, ApiKeyCacheEntry apiKeyCacheEntry) {
+        try {
+            stringRedisTemplate.opsForValue().set(PREFIX + keyId,
+                    objectMapper.writeValueAsString(apiKeyCacheEntry),
+                    TTL);
+        } catch (Exception e) {
+            log.warn("ApiKey cache put failed, keyId: {}" , keyId);
+        }
     }
 
     @Override
     public void evict(String keyId) {
 
+        try {
+            stringRedisTemplate.delete(keyId);
+        } catch (Exception e) {
+            log.warn("ApiKey cache evict failed, keyId: {}" , keyId);
+        }
     }
 }
