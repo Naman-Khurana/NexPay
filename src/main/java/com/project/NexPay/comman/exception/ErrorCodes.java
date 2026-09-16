@@ -8,5 +8,6 @@ public class ErrorCodes {
     public static final String BANK_REJECTED= "BANK_REJECTED";
     public static final String UPI_REJECTED= "UPI_REJECTED";
     public static final String VAULT_CHARGE_FAILED = "VAULT_CHARGE_FAILED";
+    public static final String RATE_LIMIT_EXCEEDED = "RATE_LIMIT_EXCEEDED";
 
 }

@@ -1,6 +1,9 @@
 package com.project.NexPay.merchant.security;
 
 import com.project.NexPay.comman.Constants;
+import com.project.NexPay.comman.exception.RateLimitException;
+import com.project.NexPay.comman.ratelimit.RateLimitResult;
+import com.project.NexPay.comman.ratelimit.RateLimiter;
 import com.project.NexPay.merchant.cache.ApiKeyCache;
 import com.project.NexPay.merchant.cache.entry.ApiKeyCacheEntry;
 import com.project.NexPay.merchant.entity.ApiKey;
@@ -13,6 +16,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.coyote.BadRequestException;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -28,13 +32,18 @@ import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
 
+import static com.project.NexPay.comman.Constants.RateLimit.RATE_LIMIT_WINDOW_SIZE;
 import static com.project.NexPay.comman.Constants.Security.AUTHORIZATION_HEADER;
 import static com.project.NexPay.comman.Constants.Security.BASIC_PREFIX;
+import static com.project.NexPay.comman.Constants.RateLimit;
 
 @Component
 @RequiredArgsConstructor
 @Slf4j
 public class  ApiKeyAuthenticationFilter extends OncePerRequestFilter {
+
+    @Value("${app.rate-limit.use-case.api-key.requests-per-minute:60}")
+    private int requestsPerMinuteAllowed;
 
 
     private final ApiKeyRepository apiKeyRepository;
@@ -43,6 +52,7 @@ public class  ApiKeyAuthenticationFilter extends OncePerRequestFilter {
     private final HandlerExceptionResolver handlerExceptionResolver;
     private final ApiKeyCache apiKeyCache;
     private final ApiKeyMapper apiKeyMapper;
+    private final RateLimiter rateLimiter;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -73,6 +83,21 @@ public class  ApiKeyAuthenticationFilter extends OncePerRequestFilter {
             if(apiKeyEntry == null || !apiKeyEntry.enabled() || !secretMatches(rawSecret,apiKeyEntry)){
                 throw new BadRequestException("Invalid or Missing API Key");
             }
+
+            //rate-limit layer
+            RateLimitResult rateLimitResult = rateLimiter.check("apikey:" + keyId, requestsPerMinuteAllowed, RATE_LIMIT_WINDOW_SIZE);
+
+            if(!rateLimitResult.isAllowed()){
+                log.warn("Too many request,keyId: {}", keyId);
+                throw new RateLimitException("Too many qequests", rateLimitResult.retryAfterSeconds());
+            }
+
+            response.setHeader(RateLimit.RATE_LIMIT_LIMIT_HEADER, String.valueOf(requestsPerMinuteAllowed));
+            response.setHeader(RateLimit.RATE_LIMIT_REMAINING_HEADER, String.valueOf(rateLimitResult.remaining()));
+
+
+
+
 
             var auth = new UsernamePasswordAuthenticationToken(keyId, null,
                      List.of(new SimpleGrantedAuthority("API_KEY_ROLE")));

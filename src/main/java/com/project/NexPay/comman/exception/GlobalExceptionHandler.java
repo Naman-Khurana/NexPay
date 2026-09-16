@@ -7,7 +7,11 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import java.time.Instant;
 import java.util.List;
+
+import static com.project.NexPay.comman.Constants.RateLimit;
+import static com.project.NexPay.comman.exception.ErrorCodes.RATE_LIMIT_EXCEEDED;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -37,5 +41,15 @@ public class GlobalExceptionHandler {
 
     return ResponseEntity.status(HttpStatus.BAD_REQUEST)
             .body(ErrorResponse.of("VALIDATION_FAILED", "Request validation failed",fieldErrors));
+    }
+
+    @ExceptionHandler(RateLimitException.class)
+    public ResponseEntity<ErrorResponse> handleRateLimitException(RateLimitException ex){
+        return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS)
+                .header(RateLimit.RATE_LIMIT_REMAINING_HEADER, "0")
+                .header(RateLimit.RATE_LIMIT_RETRY_AFTER_HEADER, String.valueOf(ex.getRetryAfterSeconds()))
+                .header(RateLimit.RATE_LIMIT_RESET_HEADER,
+                        String.valueOf(Instant.now().plusSeconds(ex.getRetryAfterSeconds()).toEpochMilli()))
+                .body(ErrorResponse.of(RATE_LIMIT_EXCEEDED,ex.getMessage()));
     }
 }

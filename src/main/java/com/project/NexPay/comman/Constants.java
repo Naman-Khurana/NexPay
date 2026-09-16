@@ -39,6 +39,18 @@ public class Constants {
         public static final String SYSTEM= "SYSTEM";
     }
 
+    public static final class RateLimit{
+        public static final int RATE_LIMIT_WINDOW_SIZE = 60;
+        private static final String RATE_LIMIT_HEADER_PREFIX = "X-RateLimit-";
+        public static final String RATE_LIMIT_REMAINING_HEADER = RATE_LIMIT_HEADER_PREFIX + "Remaining";
+        public static final String RATE_LIMIT_RETRY_AFTER_HEADER =  RATE_LIMIT_HEADER_PREFIX + "Retry-After";
+        public static final String RATE_LIMIT_RESET_HEADER = RATE_LIMIT_HEADER_PREFIX + "Reset";
+        public static final String RATE_LIMIT_LIMIT_HEADER = RATE_LIMIT_HEADER_PREFIX + "Limit";
+    }
+
+
+
+
 
 }
 

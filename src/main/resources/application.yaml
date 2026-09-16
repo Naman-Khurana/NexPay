@@ -44,3 +44,11 @@ mock:
 
 jwt:
   secret-key: dont-use-prod-kdkrf2i3hgr92h3r2hig92egf920nd2iuh18fweg54
+
+app:
+  rate-limit:
+    method: fixed
+    use-case:
+      api-key:
+        requests-per-minute: 2
+
